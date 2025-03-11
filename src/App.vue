@@ -27,7 +27,7 @@ const showNonExistingRouteMessage = () => {
     })
 
     setTimeout(() => {
-      router.replace({ path: '/', query: {} })
+      router.replace({ name: 'home', query: {} })
     }, 100)
   }
 }

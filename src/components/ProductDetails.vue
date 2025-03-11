@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useProductsStore } from '../stores/products'
 
 defineOptions({
@@ -39,13 +39,10 @@ defineOptions({
 })
 
 const router = useRouter()
-const route = useRoute()
 const productsStore = useProductsStore()
 
-const productId = computed(() => Number(route.params.id))
-
 const product = computed(() => {
-  return productsStore.products.find((p) => p.id === productId.value) || null
+  return productsStore.currentProduct
 })
 
 const goBack = () => {

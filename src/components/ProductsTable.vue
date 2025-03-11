@@ -9,10 +9,6 @@
 
     <div v-if="loading" class="loading-indicator">Loading products...</div>
 
-    <div v-else-if="error" class="error-message">
-      {{ error }}
-    </div>
-
     <div v-else>
       <PrimeDataTable
         :value="products"
@@ -96,12 +92,14 @@ const onRowClick = (event: RowClickEvent) => {
   const productId = event.data.id
   router.push({
     name: 'product-details',
-    params: { id: productId }
+    params: { id: productId },
   })
 }
 
 // Load products when component is mounted
 onMounted(() => {
+  productsStore.error = null
+
   if (!productsStore.dataLoaded) {
     productsStore.fetchProducts()
   }

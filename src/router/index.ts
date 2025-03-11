@@ -24,7 +24,7 @@ const router = createRouter({
 
         if (!productExists) {
           return next({
-            path: '/',
+            name: 'home',
             query: {
               nonExistingRoute: 'true',
               path: to.fullPath,
