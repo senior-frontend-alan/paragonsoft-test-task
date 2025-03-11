@@ -15,8 +15,25 @@ const router = createRouter({
       path: '/product/:id',
       name: 'product-details',
       component: ProductDetails,
-      // Add metadata for product verification
-      meta: { requiresProduct: true },
+      beforeEnter: async (to, from, next) => {
+        const productId = Number(to.params.id)
+        const productsStore = useProductsStore()
+
+        // Check if product exists via API
+        const productExists = await productsStore.fetchProductById(productId)
+
+        if (!productExists) {
+          return next({
+            path: '/',
+            query: {
+              nonExistingRoute: 'true',
+              path: to.fullPath,
+            },
+          })
+        }
+
+        next()
+      },
     },
     // Redirect to home page if route doesn't exist
     {
@@ -26,34 +43,6 @@ const router = createRouter({
       },
     },
   ],
-})
-
-// Hook for checking if product exists
-router.beforeEach(async (to, from, next) => {
-  // Only check routes that require a product
-  if (to.meta.requiresProduct) {
-    const productId = Number(to.params.id)
-    const productsStore = useProductsStore()
-
-    // If data is not loaded yet, load it
-    if (!productsStore.dataLoaded) {
-      await productsStore.fetchProducts()
-    }
-
-    const productExists = productsStore.products.some((p) => p.id === productId)
-
-    if (!productExists) {
-      return next({
-        path: '/',
-        query: {
-          nonExistingRoute: 'true',
-          path: `/product/${productId}`,
-        },
-      })
-    }
-  }
-
-  next()
 })
 
 export default router

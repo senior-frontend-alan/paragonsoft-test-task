@@ -12,6 +12,7 @@ export const useProductsStore = defineStore('products', () => {
   const currentPage = ref(1)
   const skip = ref(0)
   const error = ref<string | null>(null)
+  const currentProduct = ref<Product | null>(null)
 
   const fetchProducts = async (page = 1, newLimit?: number) => {
     currentPage.value = page
@@ -39,6 +40,47 @@ export const useProductsStore = defineStore('products', () => {
       const errorMessage = err instanceof Error ? err.message : String(err)
       console.error('Error loading data:', err)
       error.value = 'Error loading data: ' + errorMessage
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const fetchProductById = async (id: number): Promise<boolean> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const existingProduct = products.value.find((p) => p.id === id)
+      if (existingProduct) {
+        currentProduct.value = existingProduct
+        return true
+      }
+
+      const url = `https://dummyjson.com/products/${id}`
+      const response = await fetch(url)
+
+      if (!response.ok) {
+        error.value = `HTTP error: ${response.status}`
+        return false
+      }
+
+      const data = await response.json()
+
+      if (data && data.id) {
+        currentProduct.value = data
+        if (!products.value.some((p) => p.id === data.id)) {
+          products.value.push(data)
+        }
+        return true
+      } else {
+        error.value = 'Invalid data format'
+        return false
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err)
+      console.error('Error loading product:', err)
+      error.value = 'Error loading product: ' + errorMessage
+      return false
     } finally {
       loading.value = false
     }
@@ -82,7 +124,9 @@ export const useProductsStore = defineStore('products', () => {
     limit,
     currentPage,
     skip,
+    currentProduct,
     fetchProducts,
+    fetchProductById,
     searchProducts,
     currentSearchQuery,
   }

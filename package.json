@@ -4,11 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "run-p dev:server dev:type-check",
+    "dev:server": "vite",
+    "dev:type-check": "tsc --noEmit --project tsconfig.app.json --watch --preserveWatchOutput",
+    "type-check": "tsc --noEmit --project tsconfig.app.json",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
   },

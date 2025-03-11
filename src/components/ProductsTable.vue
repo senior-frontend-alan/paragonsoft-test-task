@@ -94,7 +94,10 @@ const onPageChange = (event: PaginationEvent) => {
 
 const onRowClick = (event: RowClickEvent) => {
   const productId = event.data.id
-  router.push(`/product/${productId}`)
+  router.push({
+    name: 'product-details',
+    params: { id: productId }
+  })
 }
 
 // Load products when component is mounted
